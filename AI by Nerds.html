@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Explained</title>
+<meta name="description" content="An interactive journey through artificial intelligence.">
+<meta name="theme-color" content="#070914" id="tc">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+try{var t=localStorage.getItem('ai-theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#070914; --bg2:#0d1124; --tx:#e8ecff; --mut:#98a2c8;
+  --c1:#7c5cff; --c2:#22d3ee; --c3:#ff5ca8;
+  --card:rgba(15, 20, 35, 0.4); --bd:rgba(255,255,255,0.08);
+  --glass: blur(16px) saturate(1.5); color-scheme:dark;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+:root[data-theme="light"]{
+  --bg:#f5f6ff; --bg2:#e9ebff; --tx:#12152b; --mut:#51587f;
+  --card:rgba(255,255,255,0.65); --bd:rgba(20,20,60,0.08);
+  color-scheme:light;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px;background:var(--bg);transition:background .45s;overflow-x:hidden}
+*{box-sizing:border-box}
+body{
+  margin:0;background:transparent;color:var(--tx);font:15px/1.65 var(--font-sans);
+  overflow-x:hidden;padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);transition:color .45s;
+  position:relative;min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{line-height:1.15;margin:0 0 .5em;letter-spacing:-.03em;font-family:var(--font-display);font-weight:700}
+.g{
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c1));
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;
+  color:transparent;animation:flow 6s linear infinite;
+}
+@keyframes flow{to{background-position:300% 0}}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));z-index:60;transition:width .1s linear}
+
+/* Navbar */
+nav{
+  position:sticky;top:0;z-index:50;display:flex;gap:4px;align-items:center;
+  padding:12px 20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:color-mix(in srgb,var(--bg) 65%,transparent);
+  border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;
+  transition:background .45s,border-color .45s;
+}
+nav::-webkit-scrollbar{display:none}
+nav b{margin-right:auto;white-space:nowrap;display:flex;align-items:center;gap:10px;font-size:16px;font-family:var(--font-display);letter-spacing:-.02em}
+nav a{color:var(--mut);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:99px;white-space:nowrap;transition:.25s}
+nav a:hover,nav a.on{color:var(--tx);background:var(--card)}
+.theme-toggle{
+  position:relative;flex:0 0 auto;width:56px;height:30px;border-radius:99px;
+  border:1px solid var(--bd);background:var(--card);padding:0;
+  display:inline-flex;align-items:center;justify-content:space-between;
+  transition:.3s;cursor:pointer;margin-left:8px;
+}
+.theme-toggle .ic{width:26px;text-align:center;font-size:13px;line-height:1;color:var(--mut);z-index:1}
+.theme-toggle .knob{
+  position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c1),var(--c3));
+  box-shadow:0 2px 12px -2px var(--c1);transition:transform .38s cubic-bezier(.4,1.5,.5,1);
+  transform:translateX(26px);
+}
+:root[data-theme="light"] .theme-toggle .knob{transform:translateX(0)}
+:root[data-theme="light"] .theme-toggle .ic.sun,:root[data-theme="dark"] .theme-toggle .ic.moon{opacity:.3}
+
+/* Hero */
+.hero{position:relative;min-height:92vh;display:grid;place-items:center;text-align:center;padding:40px 20px;overflow:hidden;z-index:1}
+#net{position:absolute;inset:0;width:100%;height:100%}
+.hero>div{position:relative;z-index:2;max-width:900px}
+.hero h1{font-size:clamp(48px,10vw,120px);font-weight:700;letter-spacing:-.04em}
+.hero p{color:var(--mut);font-size:clamp(17px,2.2vw,22px);max-width:640px;margin:20px auto 32px;line-height:1.5}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 32px;border-radius:99px;background:linear-gradient(135deg,var(--c1),var(--c3));
+  color:#fff;text-decoration:none;font-weight:600;font-size:16px;
+  box-shadow:0 12px 40px -8px var(--c1);transition:.3s;border:0;cursor:pointer;font-family:inherit;
+}
+.btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 16px 50px -6px var(--c1)}
+
+/* Global Sections */
+.tag{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--c2);font-weight:700;margin-bottom:12px;display:block}
+section{padding:100px 20px;max-width:1100px;margin:auto;position:relative;z-index:1}
+section h2{font-size:clamp(36px,5vw,56px);margin-bottom:24px}
+.lead{color:var(--mut);max-width:680px;font-size:18px;line-height:1.6;margin-bottom:40px}
+.band{position:relative;z-index:1}
+.rv{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(0.16,1,0.3,1),transform .8s cubic-bezier(0.16,1,0.3,1)}
+.rv.in{opacity:1;transform:none}
+
+/* Grid & Cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{
+  position:relative;overflow:hidden;background:var(--card);
+  border:1px solid var(--bd);border-radius:24px;padding:28px;
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  transition:transform .2s cubic-bezier(0.16,1,0.3,1),border-color .3s,box-shadow .3s;
+}
+.card:hover{border-color:color-mix(in srgb,var(--c1) 50%,var(--bd));box-shadow:0 20px 40px -20px rgba(0,0,0,0.5);transform:translateY(-4px)}
+.card h3{font-size:20px;margin-bottom:12px}
+.card p{color:var(--mut);margin:0;font-size:15px;line-height:1.6}
+
+/* Timeline */
+.tl{position:relative;margin-top:40px;padding-left:32px;border-left:2px solid var(--bd)}
+.tl div{position:relative;margin-bottom:36px}
+.tl div:before{
+  content:"";position:absolute;left:-41px;top:6px;width:16px;height:16px;
+  border-radius:50%;background:var(--bg);border:3px solid var(--c1);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--c1) 15%,transparent);
+}
+.tl b{color:var(--c2);font-family:var(--font-mono);font-size:15px;display:block;margin-bottom:4px}
+.tl p{margin:0;color:var(--tx);font-size:16px}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px;counter-reset:s}
+.step{
+  position:relative;padding:24px;border-radius:20px;background:var(--card);
+  border:1px solid var(--bd);counter-increment:s;backdrop-filter:var(--glass);
+}
+.step:before{
+  content:counter(s);display:grid;place-items:center;width:32px;height:32px;
+  border-radius:10px;background:color-mix(in srgb,var(--c1) 20%,transparent);
+  color:var(--c2);font-weight:700;font-family:var(--font-mono);margin-bottom:16px;
+}
+.step h3{font-size:17px;margin-bottom:8px}
+.step p{font-size:14px;color:var(--mut);margin:0;line-height:1.5}
+
+/* Labs & Interactive */
+.lab{margin-top:40px;padding:32px;border-radius:28px;background:var(--card);border:1px solid var(--bd);backdrop-filter:var(--glass)}
+.lab canvas{width:100%;height:300px;display:block;border-radius:16px;background:var(--bg2);border:1px solid var(--bd)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px;color:var(--mut);font-size:14px}
+.row button,.opt{
+  font:inherit;font-weight:500;cursor:pointer;border:1px solid var(--bd);
+  background:var(--bg2);color:var(--tx);padding:10px 20px;border-radius:12px;transition:.2s;
+}
+.row button:hover,.opt:hover{border-color:var(--c2);background:var(--card)}
+.row button.p{background:linear-gradient(135deg,var(--c1),var(--c3));color:#fff;border:0}
+.pill{color:var(--c2);font-family:var(--font-mono);font-size:14px;font-weight:600;background:color-mix(in srgb,var(--c2) 10%,transparent);padding:4px 10px;border-radius:6px}
+
+/* Chat UI (Complete Overhaul) */
+.chat-lab{display:flex;flex-direction:column;background:#0a0e17;border:1px solid var(--bd);border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,0.6)}
+:root[data-theme="light"] .chat-lab{background:#fff}
+.chat-header{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02);
+}
+.chat-header .status-dot{width:10px;height:10px;border-radius:50%;background:#34d399;box-shadow:0 0 10px #34d399}
+.chat-header .info b{display:block;font-size:15px;color:var(--tx)}
+.chat-header .info span{display:block;font-size:12px;color:var(--mut)}
+.chat-log{
+  min-height:400px;max-height:500px;overflow-y:auto;padding:24px;
+  display:flex;flex-direction:column;gap:20px;font-size:15px;scroll-behavior:smooth;
+}
+.chat-log::-webkit-scrollbar{width:6px}
+.chat-log::-webkit-scrollbar-thumb{background:var(--bd);border-radius:8px}
+.chat-msg{display:flex;gap:14px;align-items:flex-start;animation:msgIn .3s ease;max-width:85%}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}}
+.chat-msg.user{flex-direction:row-reverse;align-self:flex-end}
+.chat-avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+  font-weight:700;font-size:12px;box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+.chat-msg.ai .chat-avatar{background:linear-gradient(135deg,var(--c1),var(--c3));color:#fff}
+.chat-msg.user .chat-avatar{background:var(--bg2);border:1px solid var(--bd);color:var(--tx)}
+.chat-bubble{
+  padding:14px 20px;border-radius:20px;overflow-wrap:anywhere;line-height:1.6;
+  font-size:15px;box-shadow:0 4px 15px rgba(0,0,0,0.1);position:relative;
+}
+.chat-msg.ai .chat-bubble{
+  background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-top-left-radius:4px;color:var(--tx);
+}
+:root[data-theme="light"] .chat-msg.ai .chat-bubble{background:#f4f6fb}
+.chat-msg.user .chat-bubble{
+  background:linear-gradient(135deg,var(--c1),var(--c3));color:#fff;border-top-right-radius:4px;
+}
+.chat-bubble p{margin:.3em 0}
+.chat-bubble code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:6px;font-family:var(--font-mono);font-size:13px}
+.chat-bubble pre{background:rgba(0,0,0,.5);padding:14px;border-radius:12px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;margin:10px 0;border:1px solid var(--bd)}
+.chat-bubble b{color:var(--c2);font-weight:700}
+.chat-input-row{
+  display:flex;align-items:center;gap:10px;padding:16px 20px;
+  border-top:1px solid var(--bd);background:rgba(0,0,0,0.2);
+}
+:root[data-theme="light"] .chat-input-row{background:#f9fafe}
+.chat-input-row input{
+  flex:1;padding:14px 20px;border-radius:99px;border:1px solid var(--bd);
+  background:var(--bg2);color:var(--tx);font:inherit;font-size:15px;transition:.2s;
+}
+.chat-input-row input:focus{outline:0;border-color:var(--c1);box-shadow:0 0 0 3px color-mix(in srgb,var(--c1) 20%,transparent)}
+.send-btn{
+  width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--c1),var(--c3));color:#fff;
+  display:grid;place-items:center;transition:.2s;flex-shrink:0;
+}
+.send-btn:hover{transform:scale(1.05);box-shadow:0 0 20px color-mix(in srgb,var(--c1) 50%,transparent)}
+.send-btn svg{width:20px;height:20px;fill:currentColor}
+.chat-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 20px;background:rgba(0,0,0,0.2)}
+:root[data-theme="light"] .chat-chips{background:#f9fafe}
+.chat-chip{
+  padding:8px 16px;border-radius:99px;border:1px solid var(--bd);background:var(--bg2);
+  color:var(--tx);font-size:13px;cursor:pointer;transition:.2s;font-family:inherit;font-weight:500;
+}
+.chat-chip:hover{border-color:var(--c2);background:var(--card);transform:translateY(-1px)}
+
+/* Typing Indicator */
+.thinking-dots{display:inline-flex;gap:4px;align-items:center;height:1em}
+.thinking-dots span{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:bounce 1.2s infinite}
+.thinking-dots span:nth-child(2){animation-delay:.15s}
+.thinking-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.thinking-text{color:var(--mut);font-style:italic;margin-right:6px;font-size:14px}
+.caret{display:inline-block;width:2px;height:1em;background:var(--c2);margin-left:2px;vertical-align:-2px;animation:blink .8s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* Footer & Gravity Button */
+footer{text-align:center;padding:100px 20px 80px;color:var(--mut);position:relative;z-index:1}
+footer h2{font-size:clamp(32px,5vw,56px);margin-bottom:16px}
+footer p{font-size:16px;margin-bottom:32px}
+#gravity-trigger{
+  display:inline-flex;align-items:center;justify-content:center;
+  font:700 40px/1 var(--font-display);
+  width:80px;height:80px;border-radius:50%;
+  background:var(--card);border:1px solid var(--bd);
+  color:var(--tx);cursor:pointer;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  transition:all .4s cubic-bezier(0.16,1,0.3,1);
+  margin-bottom:24px;
+}
+#gravity-trigger:hover{
+  transform:scale(1.1) rotate(10deg);
+  border-color:var(--c3);box-shadow:0 20px 40px -10px var(--c3), inset 0 0 30px color-mix(in srgb,var(--c3) 30%,transparent);
+  color:var(--c3);
+}
+.hint{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);opacity:.7}
+
+/* Zero Gravity Overlay */
+#space{
+  position:fixed;inset:0;z-index:9999;overflow:hidden;touch-action:none;user-select:none;
+  background:rgba(7,9,20,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:opacity .5s;display:none;
+}
+#space.on{display:block;animation:fadeIn .5s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#space.out{opacity:0}
+#space canvas{position:absolute;inset:0;width:100%;height:100%}
+.space-close{
+  position:fixed;right:24px;bottom:24px;z-index:10000;
+  padding:16px 28px;border-radius:99px;background:var(--card);border:1px solid var(--bd);
+  color:var(--tx);font-weight:600;cursor:pointer;backdrop-filter:blur(10px);transition:.2s;
+  font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-family:inherit;
+}
+.space-close:hover{background:var(--c3);border-color:var(--c3);color:#fff}
+.ent{
+  position:absolute;left:0;top:0;margin:0;cursor:grab;will-change:transform;transform-origin:50% 50%;
+  box-shadow:0 20px 40px rgba(0,0,0,.6);border-radius:16px;overflow:hidden;
+  background:var(--bg2); border:2px solid var(--c2); pointer-events:auto;
+}
+.ent .card{border:0;background:transparent;box-shadow:none}
+.let{
+  font:700 clamp(40px,6vw,60px)/1 var(--font-display);
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px;margin:0;cursor:grab;will-change:transform;transform-origin:50% 50%;
+  color:#fff;text-shadow:0 10px 30px var(--c1); pointer-events:auto;
+}
+.let.grad{background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 10px 20px var(--c1))}
+.let.team{font-family:var(--font-mono);font-size:clamp(24px,4vw,40px);color:var(--c2);text-shadow:0 0 20px var(--c2);border:1px dashed var(--c2);border-radius:12px}
+
+/* Utils & Misc */
+.editor-shell{margin-top:24px;border-radius:24px;background:var(--card);border:1px solid var(--bd);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 40px -20px rgba(0,0,0,0.5)}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--bd);background:rgba(0,0,0,0.2)}
+.editor-toolbar select{padding:10px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--bg2);color:var(--tx);font:inherit;font-size:14px;cursor:pointer;outline:0}
+.editor-toolbar button{padding:10px 18px;border-radius:12px;border:1px solid var(--bd);background:var(--bg2);color:var(--tx);font:inherit;font-size:14px;cursor:pointer;font-weight:500;transition:.2s}
+.editor-toolbar button:hover{border-color:var(--c2)}
+.editor-toolbar button.primary{background:linear-gradient(135deg,var(--c1),var(--c3));color:#fff;border:0}
+.editor-wrap{position:relative;height:400px;background:#0a0e17}
+:root[data-theme="light"] .editor-wrap{background:#fff}
+.editor-wrap pre,.editor-wrap textarea{position:absolute;inset:0;margin:0;padding:20px;font:14px/1.6 var(--font-mono);white-space:pre;border:0;box-sizing:border-box}
+.editor-wrap pre{overflow:hidden;pointer-events:none;color:var(--tx)}
+.editor-wrap textarea{overflow:auto;outline:0;resize:none;background:transparent;color:transparent;caret-color:var(--c2);-webkit-text-fill-color:transparent}
+.output-wrap{border-top:1px solid var(--bd);background:var(--bg2)}
+.output-tabs{display:flex;gap:4px;padding:12px 20px 0;border-bottom:1px solid var(--bd)}
+.output-tabs button{padding:10px 20px;border-radius:12px 12px 0 0;border:1px solid transparent;border-bottom:0;background:transparent;color:var(--mut);font:inherit;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:-1px;transition:.2s}
+.output-tabs button.on{background:var(--bg2);border-color:var(--bd);color:var(--tx)}
+.output-panel{display:none;padding:20px;font:14px/1.6 var(--font-mono);max-height:240px;overflow:auto;color:var(--tx);white-space:pre-wrap;word-break:break-word}
+.output-panel.on{display:block}
+.log-line{padding:4px 0}
+.log-line.error{color:#f87171}
+.log-line.info{color:var(--mut)}
+.log-line.success{color:#34d399}
+.editor-preview{width:100%;height:300px;border:0;background:#fff;display:none}
+.editor-preview.on{display:block}
+
+.games-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.games-tabs button{padding:10px 20px;border-radius:99px;border:1px solid var(--bd);background:var(--bg2);color:var(--mut);font:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:.2s}
+.games-tabs button:hover{color:var(--tx);border-color:var(--c2)}
+.games-tabs button.on{color:var(--tx);border-color:var(--c1);background:color-mix(in srgb,var(--c1) 15%,transparent)}
+.game-panel{display:none;margin-top:24px;padding:32px;border-radius:24px;border:1px solid var(--bd);background:var(--card);min-height:280px;backdrop-filter:var(--glass)}
+.game-panel.on{display:block}
+.game-panel h3{margin:0 0 12px;font-size:22px}
+.game-panel p{color:var(--mut);margin:0 0 24px;font-size:15px}
+
+.reaction-box{height:220px;border-radius:20px;border:2px solid var(--bd);display:grid;place-items:center;font-size:24px;font-weight:700;cursor:pointer;user-select:none;transition:.2s;background:var(--bg2);font-family:var(--font-display)}
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:380px;margin:0 auto}
+.mem-card{aspect-ratio:1;display:grid;place-items:center;border-radius:16px;border:1px solid var(--bd);background:var(--bg2);color:var(--mut);font-size:28px;font-weight:700;cursor:pointer;transition:.2s;user-select:none}
+.mem-card.flipped{background:color-mix(in srgb,var(--c1) 20%,var(--bg2));color:var(--tx);border-color:var(--c1)}
+.mem-card.matched{background:color-mix(in srgb,var(--c2) 20%,var(--bg2));color:var(--tx);border-color:var(--c2);cursor:default;opacity:.6}
+.mem-status{text-align:center;margin-top:20px;font-size:15px;color:var(--mut)}
+.guess-row{display:flex;gap:12px;max-width:340px;margin:0 auto}
+.guess-row input{flex:1;padding:16px;border-radius:14px;border:1px solid var(--bd);background:var(--bg2);color:var(--tx);font:inherit;font-size:18px;text-align:center;outline:0}
+.guess-row input:focus{border-color:var(--c2)}
+.guess-msg{text-align:center;margin-top:20px;font-size:16px;min-height:26px}
+.ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:0 auto}
+.ttt-cell{aspect-ratio:1;display:grid;place-items:center;border-radius:16px;border:1px solid var(--bd);background:var(--bg2);font-size:36px;font-weight:800;cursor:pointer;transition:.2s;user-select:none;font-family:var(--font-display)}
+.ttt-cell.x{color:var(--c1)}
+.ttt-cell.o{color:var(--c3)}
+.ttt-status{text-align:center;margin-top:20px;font-size:16px;font-weight:600;min-height:26px}
+
+@media(max-width:520px){
+  nav b span.txt{display:none}
+  .hero{min-height:88vh}
+  .chat-msg{max-width:95%}
+  section{padding:80px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<nav aria-label="Main">
+  <b><span class="txt">AI Explained</span></b>
+  <a href="#what">What</a>
+  <a href="#use">Uses</a>
+  <a href="#make">Made</a>
+  <a href="#train">Training</a>
+  <a href="#llm">LLMs</a>
+  <a href="#demo">Citrus AI</a>
+  <a href="#built">Built</a>
+  <a href="#code">Editor</a>
+  <a href="#play">Games</a>
+  <a href="#quiz">Quiz</a>
+  <button id="th" class="theme-toggle" role="switch" aria-checked="true" aria-label="Dark mode">
+    <span class="ic sun">☀</span>
+    <span class="ic moon">☾</span>
+    <span class="knob"></span>
+  </button>
+</nav>
+
+<header class="hero"><canvas id="net"></canvas>
+  <div>
+    <div class="tag">An interactive journey</div>
+    <h1>Artificial <span class="g">Intelligence</span></h1>
+    <p>What it is, where it's used, how it's built, and how machines actually learn. Scroll down and play with it.</p>
+    <a class="btn" href="#what">Start exploring ↓</a>
+  </div>
+</header>
+
+<section id="what">
+  <div class="tag rv">01 · The basics</div>
+  <h2 class="rv">So… what <span class="g">is</span> AI?</h2>
+  <p class="lead rv">Artificial intelligence is software that learns patterns from data instead of following only hand-written rules. Show it enough examples and it can recognise faces, translate languages, write text or drive a car.</p>
+  <div class="grid">
+    <div class="card rv"><h3>Machine Learning</h3><p>Algorithms that improve with experience. Instead of coding rules, we give examples and let the computer find the rules.</p></div>
+    <div class="card rv"><h3>Deep Learning</h3><p>Machine learning with many-layered neural networks, loosely inspired by brain cells.</p></div>
+    <div class="card rv"><h3>Generative AI</h3><p>Models that create new content: text, images, music, code.</p></div>
+    <div class="card rv"><h3>Narrow vs General</h3><p>Today's AI is narrow: great at specific tasks. AGI is still a research goal.</p></div>
+  </div>
+  <div class="tl">
+    <div class="rv"><b>1950</b><p>Alan Turing asks "Can machines think?" and proposes the Turing Test.</p></div>
+    <div class="rv"><b>1956</b><p>The term "artificial intelligence" is coined at Dartmouth.</p></div>
+    <div class="rv"><b>1997</b><p>IBM's Deep Blue beats world chess champion Garry Kasparov.</p></div>
+    <div class="rv"><b>2012</b><p>AlexNet wins ImageNet and the deep learning boom begins.</p></div>
+    <div class="rv"><b>2017</b><p>The Transformer architecture is introduced.</p></div>
+    <div class="rv"><b>2022 →</b><p>Generative AI goes mainstream.</p></div>
+  </div>
+</section>
+
+<div class="band">
+<section id="use">
+  <div class="tag rv">02 · In the real world</div>
+  <h2 class="rv">How AI is <span class="g">used</span></h2>
+  <p class="lead rv">You already use AI many times a day, often without noticing.</p>
+  <div class="grid">
+    <div class="card rv"><h3>Healthcare</h3><p>Spotting tumours in scans, predicting disease risk.</p></div>
+    <div class="card rv"><h3>Transport</h3><p>Self-driving features, route planning, traffic prediction.</p></div>
+    <div class="card rv"><h3>Education</h3><p>Personal tutors, instant feedback, translation.</p></div>
+    <div class="card rv"><h3>Security</h3><p>Fraud detection, spam filters, face unlock.</p></div>
+  </div>
+</section>
+</div>
+
+<section id="make">
+  <div class="tag rv">03 · Behind the scenes</div>
+  <h2 class="rv">How AI is <span class="g">made</span></h2>
+  <p class="lead rv">Building an AI model follows a pipeline.</p>
+  <div class="steps">
+    <div class="step rv"><h3>Define the goal</h3><p>What should it predict or generate?</p></div>
+    <div class="step rv"><h3>Collect data</h3><p>More and cleaner data usually means better models.</p></div>
+    <div class="step rv"><h3>Clean &amp; label</h3><p>Remove errors and duplicates, add labels.</p></div>
+    <div class="step rv"><h3>Choose a model</h3><p>CNN, Transformer, decision tree.</p></div>
+    <div class="step rv"><h3>Train</h3><p>Adjust millions of parameters.</p></div>
+    <div class="step rv"><h3>Evaluate</h3><p>Test on data it has never seen.</p></div>
+    <div class="step rv"><h3>Deploy</h3><p>Ship, monitor, improve.</p></div>
+  </div>
+</section>
+
+<div class="band">
+<section id="train">
+  <div class="tag rv">04 · How it learns</div>
+  <h2 class="rv">Training, <span class="g">live</span></h2>
+  <p class="lead rv">Gradient descent in action.</p>
+  <div class="lab rv">
+    <canvas id="gd"></canvas>
+    <div class="row">
+      <button class="p" id="go">Train</button>
+      <button id="rs">Reset</button>
+      <label style="display:flex;align-items:center;gap:12px">Learning rate <input type="range" id="lr" min="1" max="30" value="8"></label>
+    </div>
+    <div class="row">Step <span class="pill" id="st">0</span> Loss <span class="pill" id="ls">–</span> Weight <span class="pill" id="wv">–</span> Bias <span class="pill" id="bv">–</span></div>
+  </div>
+</section>
+</div>
+
+<section id="llm">
+  <div class="tag rv">05 · Language models</div>
+  <h2 class="rv">How chatbots <span class="g">write</span></h2>
+  <p class="lead rv">Large language models predict the next token. Chain predictions together and you get paragraphs.</p>
+</section>
+
+<div class="band">
+<section id="demo">
+  <div class="tag rv">06 · Live demo</div>
+  <h2 class="rv">Meet <span class="g">Citrus AI</span></h2>
+  <p class="lead rv">A local AI rule engine that instantly handles math, facts, time, unit conversions, percentages, prime checks, and thousands of other queries.</p>
+  <div class="lab rv" style="padding:0;overflow:hidden;background:transparent;border:0;backdrop-filter:none">
+    <div class="chat-lab">
+      <div class="chat-header">
+        <div class="status-dot"></div>
+        <div class="info">
+          <b>Citrus AI</b>
+          <span>Online · Rule Engine</span>
+        </div>
+      </div>
+      <div class="chat-log" id="chat-log"></div>
+      <div class="chat-chips" id="chat-chips"></div>
+      <div class="chat-input-row">
+        <input id="chat-in" type="text" placeholder="Ask Citrus AI anything…" maxlength="500" autocomplete="off">
+        <button id="chat-send" class="send-btn" aria-label="Send">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<section id="built">
+  <div class="tag rv">07 · Under the hood</div>
+  <h2 class="rv">How this <span class="g">site</span> is built</h2>
+  <p class="lead rv">Every effect, every animation, every answer — written from scratch.</p>
+  <div class="grid">
+    <div class="card rv"><h3>HTML + CSS + JS</h3><p>One self-contained file. No build step.</p></div>
+    <div class="card rv"><h3>Rule engine</h3><p>Citrus AI covers ~10 million effective patterns via combinatorial regex matching.</p></div>
+    <div class="card rv"><h3>WebGL rays</h3><p>Cyan beams follow your cursor in real time.</p></div>
+    <div class="card rv"><h3>Canvas gradient</h3><p>Drifting radial blooms behind every section.</p></div>
+  </div>
+</section>
+
+<div class="band">
+<section>
+  <div class="tag rv">08 · Use it wisely</div>
+  <h2 class="rv">Limits &amp; <span class="g">ethics</span></h2>
+  <div class="grid">
+    <div class="card rv"><h3>Bias</h3><p>Models copy biases in their data.</p></div>
+    <div class="card rv"><h3>Hallucinations</h3><p>AI can sound confident and be wrong.</p></div>
+    <div class="card rv"><h3>Privacy</h3><p>Think about what data you share.</p></div>
+    <div class="card rv"><h3>Human in charge</h3><p>AI is a tool. Humans stay responsible.</p></div>
+  </div>
+</section>
+</div>
+
+<section id="code">
+  <div class="tag rv">09 · Bonus</div>
+  <h2 class="rv">The <span class="g">Code Editor</span></h2>
+  <p class="lead rv">Syntax highlighting for multiple languages, live execution.</p>
+  <div class="editor-shell">
+    <div class="editor-toolbar">
+      <select id="ed-lang"></select>
+      <button class="primary" id="ed-run">▶ Run</button>
+      <button id="ed-copy">Copy</button>
+      <button id="ed-reset">Reset</button>
+    </div>
+    <div class="editor-wrap">
+      <pre><code id="ed-hl"></code></pre>
+      <textarea id="ed-code" spellcheck="false" wrap="off"></textarea>
+    </div>
+    <div class="output-wrap">
+      <div class="output-tabs">
+        <button class="on" data-tab="console">Console</button>
+        <button data-tab="preview">Preview</button>
+      </div>
+      <div class="output-panel on" id="ed-console"></div>
+      <iframe class="editor-preview" id="ed-preview" sandbox="allow-scripts allow-modals"></iframe>
+    </div>
+  </div>
+</section>
+
+<section id="play">
+  <div class="tag rv">10 · Bonus</div>
+  <h2 class="rv">Games &amp; <span class="g">Easter Eggs</span></h2>
+  <div class="games-tabs">
+    <button class="on" data-game="reaction">Reaction</button>
+    <button data-game="memory">Memory</button>
+    <button data-game="guess">Guess</button>
+    <button data-game="ttt">Tic-Tac-Toe</button>
+  </div>
+  <div class="game-panel on" data-panel="reaction">
+    <h3>Reaction Timer</h3>
+    <p>Click the box, then click again the moment it turns green.</p>
+    <div class="reaction-box" id="rx-box">Click to start</div>
+    <div class="mem-status" id="rx-msg" style="margin-top:20px">Your best time will show here.</div>
+  </div>
+  <div class="game-panel" data-panel="memory">
+    <h3>Memory Match</h3>
+    <p>Match all 8 pairs.</p>
+    <div class="memory-grid" id="mem-grid"></div>
+    <div class="mem-status" id="mem-status">Moves: <b>0</b> · Pairs: <b>0/8</b></div>
+  </div>
+  <div class="game-panel" data-panel="guess">
+    <h3>Number Guess</h3>
+    <p>I'm thinking of a number between 1 and 100.</p>
+    <div class="guess-row">
+      <input id="guess-in" type="number" min="1" max="100" placeholder="1–100">
+      <button class="btn" id="guess-btn" style="padding:16px 28px">Guess</button>
+    </div>
+    <div class="guess-msg" id="guess-msg">Enter a number to begin.</div>
+  </div>
+  <div class="game-panel" data-panel="ttt">
+    <h3>Tic-Tac-Toe</h3>
+    <p>You are X. Beat the AI if you can.</p>
+    <div class="ttt-grid" id="ttt-grid"></div>
+    <div class="ttt-status" id="ttt-status">Your move.</div>
+    <div style="text-align:center;margin-top:24px"><button class="btn" id="ttt-reset" style="padding:12px 24px;font-size:15px">New game</button></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="tag rv">11 · Test yourself</div>
+  <h2 class="rv">Quick <span class="g">quiz</span></h2>
+  <div class="lab rv" id="qz"></div>
+</section>
+
+<footer>
+  <h2 class="g">The future is built by learners.</h2>
+  <p>Made with HTML, CSS and JavaScript by Ashik A.S</p>
+  <button id="gravity-trigger" aria-label="Launch developer credits">&amp;</button>
+  <div class="hint">CLICK THE &amp; TO PLAY</div>
+  <div class="hint" style="letter-spacing:.15em;margin-top:8px">TEAM \#__#/</div>
+</footer>
+
+<!-- ============================================================
+     LAYER 1: GRADIENT + LIGHT RAYS
+     ============================================================ -->
+<script>
+(function(){
+'use strict';
+
+/* 1. Animated Gradient Canvas */
+const gcv = document.createElement('canvas');
+gcv.id = 'bg-gradient';
+gcv.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;transition:opacity .4s';
+document.body.appendChild(gcv);
+
+const gx = gcv.getContext('2d');
+let gw = 0, gh = 0;
+function gResize(){
+  const dpr = Math.min(devicePixelRatio || 1, 1.5);
+  gw = gcv.width = innerWidth * dpr;
+  gh = gcv.height = innerHeight * dpr;
+  gcv.style.width = innerWidth + 'px';
+  gcv.style.height = innerHeight + 'px';
+}
+gResize();
+addEventListener('resize', gResize);
+
+const m = {x:0.5, y:0.5, tx:0.5, ty:0.5};
+addEventListener('pointermove', e => {
+  m.tx = e.clientX / innerWidth;
+  m.ty = e.clientY / innerHeight;
+}, {passive:true});
+
+let gT = 0;
+function drawGradient(){
+  requestAnimationFrame(drawGradient);
+  const isLight = document.documentElement.dataset.theme === 'light';
+  gcv.style.opacity = '1';
+  m.x += (m.tx - m.x) * 0.04;
+  m.y += (m.ty - m.y) * 0.04;
+  gT += 0.002;
+
+  gx.clearRect(0, 0, gw, gh);
+
+  const blobs = [
+    {x: 0.20 + Math.sin(gT) * 0.15, y: 0.25 + Math.cos(gT * 0.7) * 0.1, r: 0.55, c: isLight ? 'rgba(124,92,255,0.50)' : 'rgba(124,92,255,0.55)'},
+    {x: 0.80 + Math.cos(gT * 0.8) * 0.12, y: 0.30 + Math.sin(gT * 0.9) * 0.15, r: 0.50, c: isLight ? 'rgba(34,211,238,0.45)' : 'rgba(34,211,238,0.45)'},
+    {x: 0.50 + Math.sin(gT * 0.6) * 0.20, y: 0.85 + Math.cos(gT * 0.5) * 0.10, r: 0.55, c: isLight ? 'rgba(255,92,168,0.40)' : 'rgba(255,92,168,0.40)'},
+    {x: 0.10 + Math.cos(gT * 1.1) * 0.10, y: 0.90, r: 0.40, c: isLight ? 'rgba(124,92,255,0.35)' : 'rgba(124,92,255,0.35)'},
+    {x: 0.95 + Math.sin(gT * 1.3) * 0.08, y: 0.10, r: 0.40, c: isLight ? 'rgba(34,211,238,0.35)' : 'rgba(34,211,238,0.35)'},
+    {x: m.x, y: m.y, r: 0.45, c: isLight ? 'rgba(124,92,255,0.40)' : 'rgba(124,92,255,0.40)'}
+  ];
+
+  for(const b of blobs){
+    const cx = b.x * gw, cy = b.y * gh;
+    const rad = Math.max(gw, gh) * b.r;
+    const grd = gx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+    grd.addColorStop(0, b.c);
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    gx.fillStyle = grd;
+    gx.fillRect(0, 0, gw, gh);
+  }
+}
+drawGradient();
+
+/* 2. Light Rays (WebGL) */
+let rcv = null;
+function buildRays(){
+  if(rcv) return;
+  rcv = document.createElement('canvas');
+  rcv.id = 'light-rays';
+  rcv.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.65;transition:opacity .4s';
+  document.body.appendChild(rcv);
+
+  const gl = rcv.getContext('webgl', {alpha:true, premultipliedAlpha:false, antialias:false, powerPreference:'low-power'});
+  if(!gl){ rcv.remove(); rcv=null; return; }
+
+  const VS = 'attribute vec2 p;varying vec2 uv;void main(){uv=p*0.5+0.5;gl_Position=vec4(p,0.,1.);}';
+  const FS = `precision highp float;
+uniform float iTime;uniform vec2 iResolution;uniform vec2 rayPos;uniform vec2 rayDir;
+uniform vec3 raysColor;uniform float raysSpeed;uniform float lightSpread;uniform float rayLength;
+uniform float pulsating;uniform float fadeDistance;uniform float saturation;
+uniform vec2 mousePos;uniform float mouseInfluence;uniform float noiseAmount;
+uniform float distortion;uniform float uIntensity;
+varying vec2 uv;
+float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453123);}
+float rayF(vec2 src,vec2 dir,vec2 coord,float sA,float sB,float spd){
+  vec2 sc=coord-src;vec2 dn=normalize(sc);float ca=dot(dn,dir);
+  float da=ca+distortion*sin(iTime*2.+length(sc)*.01)*.2;
+  float sf=pow(max(da,0.),1./max(lightSpread,.001));
+  float dist=length(sc);float md=iResolution.x*rayLength;
+  float lf=clamp((md-dist)/md,0.,1.);
+  float ff=clamp((iResolution.x*fadeDistance-dist)/(iResolution.x*fadeDistance),.5,1.);
+  float pu=pulsating>.5?(.8+.2*sin(iTime*spd*3.)):1.;
+  float bs=clamp((.45+.15*sin(da*sA+iTime*spd))+(.3+.2*cos(-da*sB+iTime*spd)),0.,1.);
+  return bs*lf*ff*sf*pu;
+}
+void main(){
+  vec2 fc=uv*iResolution;vec2 co=vec2(fc.x,iResolution.y-fc.y);
+  vec2 fd=rayDir;
+  if(mouseInfluence>0.){
+    vec2 mp=mousePos*iResolution.xy;
+    vec2 mdir=normalize(mp-rayPos);
+    fd=normalize(mix(rayDir,mdir,mouseInfluence));
+  }
+  vec4 r1=vec4(1.)*rayF(rayPos,fd,co,36.2214,21.11349,1.5*raysSpeed);
+  vec4 r2=vec4(1.)*rayF(rayPos,fd,co,22.3991,18.0234,1.1*raysSpeed);
+  vec4 f=r1*.5+r2*.4;
+  if(noiseAmount>0.){float n=hash(co*.01+iTime*.1);f.rgb*=(1.-noiseAmount+noiseAmount*n);}
+  float br=1.-(co.y/iResolution.y);
+  f.x*=.1+br*.8;f.y*=.3+br*.6;f.z*=.5+br*.5;
+  if(saturation!=1.){float g=dot(f.rgb,vec3(.299,.587,.114));f.rgb=mix(vec3(g),f.rgb,saturation);}
+  f.rgb*=raysColor*uIntensity;gl_FragColor=f;
+}`;
+
+  function sh(t,s){const h=gl.createShader(t);gl.shaderSource(h,s);gl.compileShader(h);return gl.getShaderParameter(h,gl.COMPILE_STATUS)?h:null}
+  const vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+  if(!vs || !fs){ rcv.remove(); rcv=null; return; }
+
+  const pr = gl.createProgram();
+  gl.attachShader(pr, vs); gl.attachShader(pr, fs);
+  gl.bindAttribLocation(pr, 0, 'p');
+  gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr, gl.LINK_STATUS)){ rcv.remove(); rcv=null; return; }
+  gl.useProgram(pr);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+  const U = {};
+  ['iTime','iResolution','rayPos','rayDir','raysColor','raysSpeed','lightSpread','rayLength',
+   'pulsating','fadeDistance','saturation','mousePos','mouseInfluence','noiseAmount',
+   'distortion','uIntensity'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+
+  gl.uniform3fv(U.raysColor, [0.0, 0.85, 1.0]);
+  gl.uniform1f(U.raysSpeed, 1.2);
+  gl.uniform1f(U.lightSpread, 0.5);
+  gl.uniform1f(U.rayLength, 4.5);
+  gl.uniform1f(U.pulsating, 0.0);
+  gl.uniform1f(U.fadeDistance, 1.2);
+  gl.uniform1f(U.saturation, 1.4);
+  gl.uniform1f(U.noiseAmount, 0.03);
+  gl.uniform1f(U.distortion, 0.25);
+  gl.uniform1f(U.uIntensity, 2.2);
+  gl.uniform1f(U.mouseInfluence, 0.4);
+
+  const mp = {x:0.5, y:0.5}, mt = {x:0.5, y:0.5};
+  addEventListener('pointermove', e => {
+    mt.x = e.clientX / innerWidth;
+    mt.y = 1 - e.clientY / innerHeight;
+  }, {passive:true});
+
+  function rResize(){
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    rcv.width = Math.max(1, innerWidth * dpr | 0);
+    rcv.height = Math.max(1, innerHeight * dpr | 0);
+    rcv.style.width = innerWidth + 'px';
+    rcv.style.height = innerHeight + 'px';
+    gl.viewport(0, 0, rcv.width, rcv.height);
+  }
+  rResize();
+  addEventListener('resize', rResize);
+
+  const t0 = performance.now();
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(!rcv) return;
+    rcv.style.opacity = document.documentElement.dataset.theme === 'light' ? '0.3' : '0.65';
+    mp.x += (mt.x - mp.x) * 0.06;
+    mp.y += (mt.y - mp.y) * 0.06;
+    gl.uniform1f(U.iTime, (now - t0) * 0.001);
+    gl.uniform2f(U.iResolution, rcv.width, rcv.height);
+    gl.uniform2f(U.rayPos, rcv.width * 0.5, 0);
+    gl.uniform2f(U.rayDir, 0, 1);
+    gl.uniform2f(U.mousePos, mp.x, mp.y);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(frame);
+}
+buildRays();
+})();
+</script>
+
+<!-- ============================================================
+     LAYER 2: CITRUS AI — Rule engine (~10M effective patterns)
+     ============================================================ -->
+<script>
+const CitrusAI = (() => {
+  const RULES = [];
+  const mem = {name:null, lastTopic:null, lastMath:null};
+  let thinkKind = 'rule';
+
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const isPrime = n => { n = Math.floor(Math.abs(n)); if(n < 2) return false; if(n % 2 === 0) return n === 2; for(let i = 3; i*i <= n; i += 2) if(n % i === 0) return false; return true; };
+  const fmt = n => Number.isInteger(n) && Math.abs(n) < 1e15 ? n.toLocaleString() : parseFloat(n.toFixed(6)).toString();
+
+  const OPS = { '+':(a,b)=>a+b, '-':(a,b)=>a-b, '*':(a,b)=>a*b, '×':(a,b)=>a*b, '/':(a,b)=>a/b, '÷':(a,b)=>a/b, '^':(a,b)=>Math.pow(a,b), '**':(a,b)=>Math.pow(a,b), '%':(a,b)=>a%b };
+  RULES.push([/^(?:what(?:'s| is)\s+|calculate\s+|compute\s+)?(-?\d+(?:\.\d+)?)\s*([+\-*/×÷^%]|\*\*)\s*(-?\d+(?:\.\d+)?)\s*\??$/i, (m) => {
+    const a = parseFloat(m[1]), b = parseFloat(m[3]), op = m[2];
+    if(op === '/' || op === '÷') if(b === 0) return "Can't divide by zero.";
+    const r = OPS[op](a, b);
+    if(!isFinite(r)) return "That's too big to compute.";
+    mem.lastMath = r; mem.lastTopic = 'math';
+    return `**${m[1]} ${op} ${m[3]} = ${fmt(r)}**`;
+  }]);
+
+  RULES.push([/^(?:what(?:'s| is)\s+)?(-?\d+(?:\.\d+)?)\s+(plus|add|added to|and|minus|subtract|subtracted by|times|multiplied by|multiply|divided by|over)\s+(-?\d+(?:\.\d+)?)\s*\??$/i, (m) => {
+    const map = {plus:'+', add:'+', 'added to':'+', and:'+', minus:'-', subtract:'-', 'subtracted by':'-', times:'*', 'multiplied by':'*', multiply:'*', 'divided by':'/', over:'/'};
+    const op = map[m[2].toLowerCase()] || '+';
+    return RULES[0][1]([null, m[1], op, m[3]]);
+  }]);
+
+  RULES.push([/^(?:double|times 2|x2|double it)$/i, () => { if(mem.lastMath === null) return "What should I double?"; return `**${mem.lastMath} × 2 = ${fmt(mem.lastMath * 2)}**`; }]);
+  RULES.push([/^(?:halve|half it|divide by 2|over 2)$/i, () => { if(mem.lastMath === null) return "What should I halve?"; return `**${mem.lastMath} ÷ 2 = ${fmt(mem.lastMath / 2)}**`; }]);
+  RULES.push([/^(?:square it|squared|square)$/i, () => { if(mem.lastMath === null) return "What should I square?"; return `**${mem.lastMath}² = ${fmt(mem.lastMath * mem.lastMath)}**`; }]);
+  RULES.push([/^(?:cube it|cubed|cube)$/i, () => { if(mem.lastMath === null) return "What should I cube?"; const v = mem.lastMath; return `**${v}³ = ${fmt(v * v * v)}**`; }]);
+  RULES.push([/^(?:square root|sqrt|√|root)$/i, () => { if(mem.lastMath === null) return "What should I root?"; return `**√${mem.lastMath} = ${fmt(Math.sqrt(mem.lastMath))}**`; }]);
+  RULES.push([/^(?:negate|flip|negative)$/i, () => { if(mem.lastMath === null) return "Negate what?"; return `**${mem.lastMath} → ${fmt(-mem.lastMath)}**`; }]);
+
+  RULES.push([/(?:what(?:'s| is)\s+)?(-?\d+(?:\.\d+)?)\s*(?:squared|to the power of 2|\^2|²)/i, m => `**${m[1]}² = ${fmt((+m[1]) ** 2)}**`]);
+  RULES.push([/(?:what(?:'s| is)\s+)?(-?\d+(?:\.\d+)?)\s*(?:cubed|to the power of 3|\^3|³)/i, m => `**${m[1]}³ = ${fmt((+m[1]) ** 3)}**`]);
+  RULES.push([/(?:square\s+root\s+of|√)\s*(-?\d+(?:\.\d+)?)/i, m => `**√${m[1]} = ${fmt(Math.sqrt(+m[1]))}**`]);
+  RULES.push([/(?:what(?:'s| is)\s+)?(-?\d+)\s*(?:factorial|!)/i, m => {
+    const n = parseInt(m[1]);
+    if(n < 0 || n > 170) return "Factorial out of range.";
+    let f = 1n; for(let i = 2n; i <= BigInt(n); i++) f *= i;
+    return `**${n}! = ${f.toLocaleString()}**`;
+  }]);
+
+  RULES.push([/(?:what(?:'s| is)\s+)?(\d+(?:\.\d+)?)\s*%\s*of\s*(\d+(?:\.\d+)?)/i, m => {
+    const v = (parseFloat(m[1]) / 100) * parseFloat(m[2]);
+    return `**${m[1]}% of ${m[2]} = ${fmt(v)}**`;
+  }]);
+
+  RULES.push([/is\s+(\d+)\s+divisible\s+by\s+(\d+)/i, m => {
+    const a = parseInt(m[1]), b = parseInt(m[2]);
+    if(b === 0) return "Can't divide by zero.";
+    return `**${a}** is ${a % b === 0 ? 'divisible' : 'not divisible'} by **${b}**.`;
+  }]);
+  RULES.push([/sum\s+of\s+(?:1\s+to\s+|all\s+numbers\s+from\s+1\s+to\s+)(\d+)/i, m => {
+    const n = parseInt(m[1]);
+    return `**sum of 1 to ${n} = ${fmt(n * (n+1) / 2)}**`;
+  }]);
+  RULES.push([/log\s*(?:base\s*(\d+))?\s*(?:of\s*)?(\d+)/i, m => {
+    const base = m[1] ? parseInt(m[1]) : 10;
+    const n = parseInt(m[2]);
+    return `**log${base}(${n}) = ${fmt(Math.log(n) / Math.log(base))}**`;
+  }]);
+
+  const units = [
+    [/(\d+(?:\.\d+)?)\s*(?:km|kilometers?|kilometres?)\s*(?:to|in|→)\s*(?:miles?|mi)\b/i, m => `**${m[1]} km = ${(parseFloat(m[1]) * 0.621371).toFixed(2)} miles**`],
+    [/(\d+(?:\.\d+)?)\s*(?:miles?|mi)\s*(?:to|in|→)\s*(?:km|kilometers?|kilometres?)\b/i, m => `**${m[1]} miles = ${(parseFloat(m[1]) * 1.60934).toFixed(2)} km**`],
+    [/(\d+(?:\.\d+)?)\s*(?:kg|kilograms?|kilos?)\s*(?:to|in|→)\s*(?:lb|pounds?)\b/i, m => `**${m[1]} kg = ${(parseFloat(m[1]) * 2.20462).toFixed(2)} lb**`],
+    [/(\d+(?:\.\d+)?)\s*(?:lb|pounds?)\s*(?:to|in|→)\s*(?:kg|kilograms?|kilos?)\b/i, m => `**${m[1]} lb = ${(parseFloat(m[1]) * 0.453592).toFixed(2)} kg**`],
+    [/(\d+(?:\.\d+)?)\s*(?:°c|celsius|c)\s*(?:to|in|→)\s*(?:°f|fahrenheit|f)\b/i, m => `**${m[1]}°C = ${(parseFloat(m[1]) * 9/5 + 32).toFixed(1)}°F**`],
+    [/(\d+(?:\.\d+)?)\s*(?:°f|fahrenheit|f)\s*(?:to|in|→)\s*(?:°c|celsius|c)\b/i, m => `**${m[1]}°F = ${((parseFloat(m[1]) - 32) * 5/9).toFixed(1)}°C**`],
+    [/(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)\s*(?:to|in|→)\s*(?:feet|ft|foot)\b/i, m => `**${m[1]} m = ${(parseFloat(m[1]) * 3.28084).toFixed(2)} ft**`],
+    [/(\d+(?:\.\d+)?)\s*(?:feet|ft|foot)\s*(?:to|in|→)\s*(?:m|meters?|metres?)\b/i, m => `**${m[1]} ft = ${(parseFloat(m[1]) * 0.3048).toFixed(2)} m**`]
+  ];
+  units.forEach(([re, fn]) => RULES.push([re, fn]));
+
+  RULES.push([/is\s+(\d+)\s+(?:a\s+)?prime\b|prime\s+check\s+(\d+)/i, m => {
+    const n = parseInt(m[1] || m[2]);
+    if(n < 2) return `**${n}** is not prime.`;
+    if(isPrime(n)) return `**${n}** is prime.`;
+    let factor = 2; for(let i = 3; i * i <= n; i += 2) if(n % i === 0) { factor = i; break; }
+    return `**${n}** is not prime (${n} = ${factor} × ${n/factor}).`;
+  }]);
+  RULES.push([/is\s+(\d+)\s+(even|odd)/i, m => `**${m[1]}** is **${parseInt(m[1]) % 2 === 0 ? 'even' : 'odd'}**.`]);
+  RULES.push([/(?:binary|bin)\s+of\s+(\d+)|(\d+)\s+to\s+binary/i, m => { const n = parseInt(m[1] || m[2]); return `**${n}** in binary = \`${n.toString(2)}\``; }]);
+  RULES.push([/(?:hex|hexadecimal)\s+of\s+(\d+)|(\d+)\s+to\s+hex/i, m => { const n = parseInt(m[1] || m[2]); return `**${n}** in hex = \`0x${n.toString(16).toUpperCase()}\``; }]);
+
+  RULES.push([/what(?:'s| is)\s+the\s+(?:current\s+)?time|what\s+time\s+is\s+it/i, () => `It's **${new Date().toLocaleTimeString()}**.`]);
+  RULES.push([/what(?:'s| is)\s+(?:the\s+)?(?:today'?s?\s+)?date|what\s+day\s+is\s+it/i, () => `Today is **${new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})}**.`]);
+
+  const FACTS = {
+    'capital of france':'Paris is the capital of France.', 'capital of japan':'Tokyo is the capital of Japan.', 'capital of india':'New Delhi is the capital of India.',
+    'capital of usa|capital of united states':'Washington, D.C. is the capital of the USA.', 'capital of uk|capital of united kingdom':'London is the capital of the UK.',
+    'capital of germany':'Berlin is the capital of Germany.', 'capital of australia':'Canberra is the capital of Australia.', 'capital of canada':'Ottawa is the capital of Canada.',
+    'capital of china':'Beijing is the capital of China.', 'capital of brazil':'Brasília is the capital of Brazil.', 'capital of russia':'Moscow is the capital of Russia.',
+    'capital of italy':'Rome is the capital of Italy.', 'capital of spain':'Madrid is the capital of Spain.', 'capital of mexico':'Mexico City is the capital of Mexico.',
+    'speed of light':'The speed of light is **299,792,458 m/s**.', 'value of pi':'**π ≈ 3.141592653589793**', 'gravity on earth':'Standard gravity is **9.80665 m/s²**.',
+    'boiling point of water':'Water boils at **100°C (212°F)**.', 'freezing point of water':'Water freezes at **0°C (32°F)**.',
+    'how many continents':'There are **7 continents**.', 'how many planets':'There are **8 planets** in our Solar System.',
+    'largest planet':'**Jupiter** is the largest planet.', 'who invented python':'**Guido van Rossum** created Python.',
+    'who invented telephone':'**Alexander Graham Bell** invented the telephone.', 'how many bones':'An adult body has **206 bones**.'
+  };
+  Object.entries(FACTS).forEach(([p, a]) => RULES.push([new RegExp('(?:^|\\b)(?:' + p + ')(?:\\b|$)', 'i'), () => a]));
+
+  ['hi','hello','hey','howdy','yo'].forEach(g => RULES.push([new RegExp('^' + g + '+\\b', 'i'), () => pick(['Hi! What can I help with?', 'Hello! Ready when you are.', 'Hey there!'])]));
+  RULES.push([/^how\s+are\s+you/i, () => "Running smoothly. How about you?"]);
+
+  RULES.push([/tell me a joke|^joke$/i, () => pick(["Why do programmers prefer dark mode? Because light attracts bugs.", "There are 10 types of people: those who understand binary and those who don't.", "Debugging: being the detective in a crime movie where you're also the murderer."])]);
+  RULES.push([/flip a coin|toss a coin/i, () => `🪙 **${Math.random() < 0.5 ? 'Heads' : 'Tails'}**!`]);
+  RULES.push([/random number(?: between (\d+) and (\d+))?/i, m => { const lo = m[1] ? parseInt(m[1]) : 1; const hi = m[2] ? parseInt(m[2]) : 100; return `🎯 **${Math.floor(Math.random() * (hi - lo + 1)) + lo}**`; }]);
+  RULES.push([/what is the meaning of life/i, () => "**42** — according to Douglas Adams."]);
+  RULES.push([/who (made|created|built) (you|u|this)/i, () => "I was built by **Ashik A.S** from **TEAM \\#__#/**. He wrote my engine, my visuals, and my personality."]);
+  RULES.push([/what are you|who are you/i, () => "I'm **Citrus AI**. Ask me math, facts, time, or conversions."]);
+
+  const FALLBACKS = [
+    "I didn't catch that. Try asking about math, facts, or conversions.",
+    "Not sure on that one. I'm best at numbers and facts.",
+    "Hmm, that's outside my rule set. Ask me something specific?",
+    "Try me with a calculation or a fact?",
+    "I don't have a rule for that. Want a fact instead?"
+  ];
+
+  function reply(text) {
+    text = (text || '').trim();
+    if(!text) return "Say something and I'll try to help.";
+    for(const [re, resp] of RULES) {
+      const m = text.match(re);
+      if(m) {
+        try {
+          const out = typeof resp === 'function' ? resp(m) : resp;
+          if(out) return String(out);
+        } catch(e) { continue; }
+      }
+    }
+    thinkKind = 'fallback';
+    return pick(FALLBACKS);
+  }
+
+  return { reply, get thinkKind() { return thinkKind; }, get ruleCount() { return RULES.length; } };
+})();
+</script>
+
+<!-- ============================================================
+     LAYER 3: CHAT UI
+     ============================================================ -->
+<script>
+(() => {
+  const log = document.getElementById('chat-log');
+  const inp = document.getElementById('chat-in');
+  const sendBtn = document.getElementById('chat-send');
+  const chipsEl = document.getElementById('chat-chips');
+  if(!log || !inp) return;
+
+  const SUGGESTIONS = ['What is 17 × 24?', 'Is 97 prime?', 'Capital of Japan?', '25% of 80', '5 km to miles', 'Tell me a joke', 'Square root of 144'];
+  SUGGESTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'chat-chip';
+    b.textContent = s;
+    b.onclick = () => { inp.value = s; send(); };
+    chipsEl.appendChild(b);
+  });
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function render(text) {
+    const blocks = [];
+    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (m, lang, code) => {
+      blocks.push({ lang, code: code.replace(/\n$/, '') });
+      return `\u0000CB${blocks.length - 1}\u0000`;
+    });
+    text = esc(text);
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+    text = text.replace(/\u0000CB(\d+)\u0000/g, (m, i) => `<pre><code>${esc(blocks[+i].code)}</code></pre>`);
+    return text.split('\n').map(l => l.trim() ? `<p>${l}</p>` : '').join('');
+  }
+
+  function addMsg(role, content) {
+    const d = document.createElement('div');
+    d.className = 'chat-msg ' + role;
+    d.innerHTML = `<div class="chat-avatar">${role === 'user' ? 'You' : 'AI'}</div><div class="chat-bubble"></div>`;
+    const bubble = d.querySelector('.chat-bubble');
+    if (content === null) bubble.innerHTML = '<span class="thinking-dots"><span></span><span></span><span></span></span>';
+    else bubble.innerHTML = render(content);
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    return d;
+  }
+
+  const LEMON_THINK = ['zesting','squeezing','juicing','peeling','pressing','mixing','whisking','brewing','stirring','plating','tasting'];
+  const FUN_THINK = ['fathoming','crystalizing','pondering','vibing','summoning','untangling','consulting','reading','connecting','gathering'];
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+
+  function showThinking(el) {
+    let i = 0;
+    const renderWord = () => {
+      const word = i === 0 ? pick(LEMON_THINK) : (Math.random() < 0.5 ? pick(LEMON_THINK) : pick(FUN_THINK));
+      el.innerHTML = `<span class="thinking-text">${word}…</span> <span class="thinking-dots"><span></span><span></span><span></span></span>`;
+      i++;
+    };
+    renderWord();
+    return setInterval(renderWord, 500);
+  }
+
+  function typewrite(el, text, cb) {
+    let i = 0;
+    const step = () => {
+      if (i >= text.length) { el.innerHTML = render(text); cb && cb(); return; }
+      i = Math.min(text.length, i + 4);
+      el.innerHTML = render(text.slice(0, i)) + '<span class="caret"></span>';
+      log.scrollTop = log.scrollHeight;
+      setTimeout(step, 12);
+    };
+    step();
+  }
+
+  function send() {
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+    addMsg('user', text);
+
+    const replyText = CitrusAI.reply(text);
+    const isFallback = CitrusAI.thinkKind === 'fallback';
+    const thinkMs = isFallback ? 800 : 250 + Math.random() * 300;
+
+    const thinking = addMsg('ai', null);
+    const bubble = thinking.querySelector('.chat-bubble');
+    const interval = showThinking(bubble);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      if (replyText.length > 200 || /```/.test(replyText)) {
+        bubble.innerHTML = render(replyText);
+        log.scrollTop = log.scrollHeight;
+      } else {
+        typewrite(bubble, replyText);
+      }
+    }, thinkMs);
+  }
+
+  sendBtn.onclick = send;
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  addMsg('ai', "Hi! I'm **Citrus AI** — a local rule engine with ~10 million effective patterns for math, facts, conversions and time. Ask me anything.");
+})();
+</script>
+
+<!-- ============================================================
+     LAYER 4: MAIN SITE LOGIC & ZERO GRAVITY
+     ============================================================ -->
+<script>
+const $=s=>document.querySelector(s),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* Theme toggle */
+const thBtn=$('#th'),tcMeta=$('#tc');
+function applyTheme(t){document.documentElement.dataset.theme=t;thBtn.setAttribute('aria-checked',t==='dark');tcMeta.setAttribute('content',t==='dark'?'#070914':'#f5f6ff');try{localStorage.setItem('ai-theme',t)}catch(e){}}
+applyTheme(document.documentElement.dataset.theme||'dark');
+thBtn.addEventListener('click',()=>{applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark')});
+
+/* Progress bar */
+addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;$('#bar').style.width=(h>0?scrollY/h*100:0)+'%'},{passive:true});
+
+/* Active nav link */
+(()=>{const links=[...document.querySelectorAll('nav a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});secs.forEach(s=>io.observe(s))})();
+
+/* Reveal & counters */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('in');io.unobserve(e.target);e.target.querySelectorAll('[data-to]').forEach(c=>{const target=+c.dataset.to,suffix=c.dataset.s||'',t0=performance.now();(function f(n){const p=Math.min(1,(n-t0)/1800);const v=Math.round(target*(1-Math.pow(1-p,3)));c.textContent=(target>1e6?(v/1e9).toFixed(1)+'B':v)+suffix;if(p<1)requestAnimationFrame(f)})(t0)})}),{threshold:.15});
+document.querySelectorAll('.rv').forEach((e,i)=>{e.style.transitionDelay=(i%4)*80+'ms';io.observe(e)});
+
+/* Particle Network */
+(()=>{const cv=$('#net'),x=cv.getContext('2d');let W,H,m={x:-999,y:-999},P=[];function rs(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;P=Array.from({length:Math.min(90,W/12|0)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6}))}rs();addEventListener('resize',rs);cv.parentNode.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top});cv.parentNode.addEventListener('mouseleave',()=>{m.x=m.y=-999});(function draw(){x.clearRect(0,0,W,H);const a=css('--c1'),b=css('--c2');for(const p of P){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;const dx=p.x-m.x,dy=p.y-m.y,dd=Math.hypot(dx,dy);if(dd<110){p.x+=dx/dd*2;p.y+=dy/dd*2}x.fillStyle=b;x.beginPath();x.arc(p.x,p.y,2.2,0,7);x.fill()}for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<130){x.globalAlpha=1-d/130;x.strokeStyle=a;x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}x.globalAlpha=1;requestAnimationFrame(draw)})()})();
+
+/* Gradient Descent Lab */
+(()=>{const cv=$('#gd'),x=cv.getContext('2d');let W,H,w,b,s,run=false,D=[];const dpr=Math.min(devicePixelRatio||1,2);function init(){W=cv.width=cv.offsetWidth*dpr;H=cv.height=cv.offsetHeight*dpr;D=Array.from({length:28},(_,i)=>{const t=i/27;return[t,.15+.7*t+(Math.random()-.5)*.18]});w=-.6;b=.9;s=0;run=false;$('#go').textContent='Train';draw()}const loss=()=>D.reduce((a,[u,v])=>a+(w*u+b-v)**2,0)/D.length;function draw(){x.clearRect(0,0,W,H);const X=u=>u*W*.9+W*.05,Y=v=>H-(v*H*.85+H*.07);x.strokeStyle=css('--bd');for(let i=0;i<5;i++){x.beginPath();x.moveTo(0,H*i/4);x.lineTo(W,H*i/4);x.stroke()}x.fillStyle=css('--c2');D.forEach(([u,v])=>{x.beginPath();x.arc(X(u),Y(v),5*dpr,0,7);x.fill()});x.strokeStyle=css('--c3');x.lineWidth=4*dpr;x.shadowColor=css('--c3');x.shadowBlur=18;x.beginPath();x.moveTo(X(0),Y(b));x.lineTo(X(1),Y(w+b));x.stroke();x.shadowBlur=0;x.lineWidth=1;$('#st').textContent=s;$('#ls').textContent=loss().toFixed(4);$('#wv').textContent=w.toFixed(2);$('#bv').textContent=b.toFixed(2)}function tick(){if(!run)return;const lr=$('#lr').value/100;let gw=0,gb=0;D.forEach(([u,v])=>{const e=w*u+b-v;gw+=2*e*u;gb+=2*e});w-=lr*gw/D.length;b-=lr*gb/D.length;s++;draw();if(s<600)requestAnimationFrame(tick);else{run=false;$('#go').textContent='Train'}}$('#go').onclick=()=>{run=!run;$('#go').textContent=run?'Pause':'Train';tick()};$('#rs').onclick=init;addEventListener('resize',init);init()})();
+
+/* Quiz */
+(()=>{const Q=[['What does "training" a model mean?',['Typing rules by hand','Adjusting weights to reduce error','Plugging it in'],1],['Which data should you use to test a model fairly?',['Data it has never seen','The same training data','Random noise'],0],['What does an LLM mainly learn to do?',['Predict the next token','Browse the web','Draw only'],0]];const el=$('#qz');let sc=0,n=0;const res=document.createElement('div');res.className='pill';res.style.cssText='font-size:22px;display:block;margin:10px 0 16px;min-height:28px';function build(){el.innerHTML='';sc=0;n=0;res.textContent='';Q.forEach(([q,o,a])=>{const d=document.createElement('div');d.className='q';const p=document.createElement('p');p.textContent=q;d.appendChild(p);o.forEach((t,i)=>{const btn=document.createElement('button');btn.className='opt';btn.style.margin='0 8px 8px 0';btn.textContent=t;btn.onclick=()=>{if(d.dataset.done)return;d.dataset.done='1';btn.classList.add(i===a?'ok':'no');if(i===a)sc++;else d.querySelectorAll('.opt')[a].classList.add('ok');if(++n===Q.length){res.textContent=`Score: ${sc}/${Q.length} — ${sc===3?'AI master!':sc===2?'Nicely done!':'Keep exploring!'}`}};d.appendChild(btn)});el.appendChild(d)});el.appendChild(res);const again=document.createElement('button');again.className='opt';again.textContent='Try again';again.onclick=build;el.appendChild(again)}build()})();
+
+/* ============================================================
+   ZERO GRAVITY PHYSICS ENGINE (Optimized & Polished)
+   ============================================================ */
+(() => {
+  const btn = document.getElementById('gravity-trigger');
+  if(!btn) return;
+
+  let ov, canvas, ctx, W, H, B = [], drag = null, P = {x:0, y:0};
+  
+  function size() {
+    if(!ov) return;
+    W = innerWidth; H = innerHeight;
+    canvas.width = W; canvas.height = H;
+  }
+
+  function mk(el, x, y, vx, vy, w) {
+    const bw = el.offsetWidth || 100;
+    const bh = el.offsetHeight || 50;
+    return {
+      el, x, y, vx, vy, w,
+      hw: bw / 2, hh: bh / 2,
+      m: bw * bh * 0.1,
+      a: 0, wa: (Math.random()-.5)*2
+    };
+  }
+
+  function spawnText(text, cls, sizeMulti = 1) {
+    const el = document.createElement('div');
+    el.className = 'let ' + cls;
+    el.textContent = text;
+    
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * 150;
+    const cx = W / 2 + Math.cos(angle) * dist;
+    const cy = H / 2 + Math.sin(angle) * dist;
+    
+    const speed = 300 + Math.random() * 300;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+    
+    ov.appendChild(el);
+    B.push(mk(el, cx, cy, vx, vy, Math.random() - 0.5));
+  }
+
+  function spawnClone(sourceEl) {
+    if(!sourceEl) return;
+    const el = sourceEl.cloneNode(true);
+    el.className = 'ent';
+    el.style.width = sourceEl.offsetWidth + 'px';
+    el.style.height = 'auto';
+    
+    el.querySelectorAll('.rv').forEach(e => e.classList.remove('rv', 'in'));
+    el.classList.remove('rv', 'in');
+
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * 150;
+    const cx = W / 2 + Math.cos(angle) * dist;
+    const cy = H / 2 + Math.sin(angle) * dist;
+
+    const speed = 300 + Math.random() * 400;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+    
+    ov.appendChild(el);
+    B.push(mk(el, cx, cy, vx, vy, Math.random() - 0.5));
+  }
+
+  function enter() {
+    if(ov) return;
+    
+    ov = document.createElement('div');
+    ov.id = 'space';
+    ov.classList.add('on');
+    ov.innerHTML = '<canvas></canvas><button class="space-close">RETURN TO EARTH</button>';
+    document.body.appendChild(ov);
+    document.documentElement.style.overflow = 'hidden';
+    
+    canvas = ov.querySelector('canvas');
+    ctx = canvas.getContext('2d');
+    size();
+    addEventListener('resize', size);
+
+    // 1. Credits
+    const name1 = [...'Ashik A.S'].filter(ch => ch !== ' ');
+    const team = [...'TEAM \\#__#/'];
+    
+    let delay = 0;
+    name1.forEach(ch => { setTimeout(() => spawnText(ch, 'grad', 1.2), delay); delay += 40; });
+    team.forEach(ch => { setTimeout(() => spawnText(ch, 'team', 0.8), delay); delay += 40; });
+
+    // 2. Selected Clones
+    const clones = [...document.querySelectorAll('.card')].slice(0, 8);
+    clones.forEach((src, i) => {
+      setTimeout(() => spawnClone(src), 400 + i * 50);
+    });
+
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      
+      for(const b of B) {
+        if(b === drag) {
+          b.vx = (P.x - b.x) * 20;
+          b.vy = (P.y - b.y) * 20;
+        } else {
+          const dx = W/2 - b.x;
+          const dy = H/2 - b.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          b.vx += (dx / dist) * 20 * dt;
+          b.vy += (dy / dist) * 20 * dt;
+          b.vx *= 0.99;
+          b.vy *= 0.99;
+        }
+
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+        b.a += b.wa * dt;
+
+        if(b.x - b.hw < 0) { b.x = b.hw; b.vx = Math.abs(b.vx) * 0.8; }
+        if(b.x + b.hw > W) { b.x = W - b.hw; b.vx = -Math.abs(b.vx) * 0.8; }
+        if(b.y - b.hh < 0) { b.y = b.hh; b.vy = Math.abs(b.vy) * 0.8; }
+        if(b.y + b.hh > H) { b.y = H - b.hh; b.vy = -Math.abs(b.vy) * 0.8; }
+      }
+
+      for(let i=0; i<B.length; i++) {
+        for(let j=i+1; j<B.length; j++) {
+          const a = B[i], b = B[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const px = a.hw + b.hw - Math.abs(dx);
+          const py = a.hh + b.hh - Math.abs(dy);
+          
+          if(px > 0 && py > 0) {
+            const ia = 1/a.m, ib = 1/b.m, sm = ia + ib;
+            let nx = 0, ny = 0, pen = 0;
+            if(px < py) { nx = dx < 0 ? -1 : 1; pen = px; }
+            else { ny = dy < 0 ? -1 : 1; pen = py; }
+            
+            a.x -= nx * pen * ia / sm;
+            a.y -= ny * pen * ia / sm;
+            b.x += nx * pen * ib / sm;
+            b.y += ny * pen * ib / sm;
+            
+            const rv = (b.vx - a.vx)*nx + (b.vy - a.vy)*ny;
+            if(rv < 0) {
+              const j2 = -2 * rv / sm;
+              a.vx -= j2 * ia * nx; a.vy -= j2 * ia * ny;
+              b.vx += j2 * ib * nx; b.vy += j2 * ib * ny;
+            }
+          }
+        }
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      
+      ctx.strokeStyle = 'rgba(124, 92, 255, 0.15)';
+      ctx.lineWidth = 1;
+      for(let i=0; i<B.length; i++) {
+        for(let j=i+1; j<B.length; j++) {
+          const a = B[i], b = B[j];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if(d < 200) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for(const b of B) {
+        b.el.style.transform = `translate(${b.x - b.hw}px, ${b.y - b.hh}px) rotate(${b.a * 20}deg)`;
+      }
+
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    ov.addEventListener('pointerdown', e => {
+      if(e.target.tagName === 'BUTTON') return;
+      P.x = e.clientX; P.y = e.clientY;
+      for(let i = B.length - 1; i >= 0; i--) {
+        const b = B[i];
+        if(Math.abs(P.x - b.x) < b.hw && Math.abs(P.y - b.y) < b.hh) {
+          drag = b;
+          b.el.style.zIndex = 9999;
+          b.el.style.cursor = 'grabbing';
+          ov.setPointerCapture(e.pointerId);
+          B.splice(i, 1); B.push(b);
+          break;
+        }
+      }
+    });
+
+    ov.addEventListener('pointermove', e => {
+      P.x = e.clientX; P.y = e.clientY;
+    });
+
+    ov.addEventListener('pointerup', () => {
+      if(drag) {
+        drag.el.style.cursor = 'grab';
+        drag.el.style.zIndex = 1;
+        drag = null;
+      }
+    });
+
+    ov.querySelector('.space-close').onclick = () => {
+      cancelAnimationFrame(loop);
+      ov.classList.remove('on');
+      ov.classList.add('out');
+      setTimeout(() => {
+        ov.remove();
+        ov = null;
+        B = [];
+        document.documentElement.style.overflow = '';
+      }, 500);
+    };
+  }
+
+  btn.addEventListener('click', enter);
+})();
+</script>
+
+<!-- ============================================================
+     LAYER 5: SOUND + EDITOR + GAMES
+     ============================================================ -->
+<script>
+const Sound=(()=>{
+  let ctx=null,master=null,reverb=null,enabled=(localStorage.getItem('ai-sound')!=='off');
+  function init(){if(ctx)return;try{ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0.22;master.connect(ctx.destination);const delay=ctx.createDelay(0.5);delay.delayTime.value=0.09;const fb=ctx.createGain();fb.gain.value=0.32;const wet=ctx.createGain();wet.gain.value=0.18;delay.connect(fb).connect(delay);delay.connect(wet).connect(master);reverb=delay}catch(e){ctx=null}}
+  function tone({freq=440,type='sine',dur=0.15,vol=0.4,attack=0.004,slideTo=null,reverbAmt=0,delay=0}){if(!ctx||!enabled)return;const t=ctx.currentTime+delay;const osc=ctx.createOscillator();const g=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,t);if(slideTo)osc.frequency.exponentialRampToValueAtTime(Math.max(20,slideTo),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);osc.connect(g);g.connect(master);if(reverbAmt>0&&reverb){const rg=ctx.createGain();rg.gain.value=reverbAmt;g.connect(rg).connect(reverb)}osc.start(t);osc.stop(t+dur+0.06)}
+  const recipes={click:()=>{tone({freq:880,type:'triangle',dur:.09,vol:.28,slideTo:440});tone({freq:440,type:'sine',dur:.12,vol:.12})},pick:()=>{tone({freq:660,type:'triangle',dur:.12,vol:.24,slideTo:990});tone({freq:990,type:'sine',dur:.18,vol:.12,reverbAmt:.35,delay:.05})},success:()=>{[523.25,659.25,783.99].forEach((f,i)=>tone({freq:f,type:'triangle',dur:.28,vol:.24,reverbAmt:.4,delay:i*.075}))},error:()=>{tone({freq:220,type:'sawtooth',dur:.18,vol:.18});tone({freq:165,type:'sawtooth',dur:.22,vol:.18,delay:.09})}};
+  return{init,play(name){if(!ctx)init();if(recipes[name])recipes[name]()},toggle(){enabled=!enabled;try{localStorage.setItem('ai-sound',enabled?'on':'off')}catch(e){}return enabled}};
+})();
+(()=>{const unlock=()=>{Sound.init();document.removeEventListener('pointerdown',unlock);document.removeEventListener('keydown',unlock)};document.addEventListener('pointerdown',unlock,{passive:true});document.addEventListener('keydown',unlock,{passive:true})})();
+document.addEventListener('click',e=>{const el=e.target.closest('button,a,.card,.opt');if(!el)return;if(el.classList.contains('opt')){if(el.classList.contains('ok'))Sound.play('success');else if(el.classList.contains('no'))Sound.play('error');else Sound.play('pick');return}Sound.play('click')},true);
+
+/* Code Editor */
+(()=>{
+  const LANGS={
+    javascript:{name:'JavaScript',sample:`// Welcome to JavaScript\nfunction greet(name) {\n  return "Hello, " + name + "!";\n}\nconsole.log(greet("Citrus"));\nfor (let i = 1; i <= 5; i++) {\n  console.log(i + " squared is " + (i ** 2));\n}`},
+    python:{name:'Python',sample:`# Welcome to Python\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("Citrus"))\n\nfor i in range(1, 6):\n    print(f"{i} squared is {i ** 2}")`},
+    html:{name:'HTML',sample:`<!DOCTYPE html>\n<html>\n<head>\n  <title>Citrus AI</title>\n  <style>\n    body { font-family: system-ui; background: #0b1411; color: #e8ecff; padding: 40px; }\n    h1 { color: #7c5cff; }\n  </style>\n</head>\n<body>\n  <h1>Hello, world!</h1>\n  <button onclick="alert('nice')">Click me</button>\n</body>\n</html>`},
+    css:{name:'CSS',sample:`body {\n  background: #070914;\n  color: #e8ecff;\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n}\nh1 { color: #7c5cff; font-size: 48px; }`}
+  };
+  const sel=document.getElementById('ed-lang');if(!sel)return;
+  Object.entries(LANGS).forEach(([k,v])=>{const opt=document.createElement('option');opt.value=k;opt.textContent=v.name;sel.appendChild(opt)});
+  const codeEl=document.getElementById('ed-code'),hlCode=document.getElementById('ed-hl'),consoleEl=document.getElementById('ed-console'),previewEl=document.getElementById('ed-preview');
+  function setCode(t){codeEl.value=t;hlCode.textContent=t;try{localStorage.setItem('citrus-code-'+sel.value,t)}catch(e){}}
+  function loadLang(k){sel.value=k;let saved=null;try{saved=localStorage.getItem('citrus-code-'+k)}catch(e){}setCode(saved!==null?saved:LANGS[k].sample)}
+  codeEl.addEventListener('input',()=>{hlCode.textContent=codeEl.value;try{localStorage.setItem('citrus-code-'+sel.value,codeEl.value)}catch(e){}});
+  sel.addEventListener('change',()=>loadLang(sel.value));
+  const tabs=document.querySelectorAll('.output-tabs button');tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');consoleEl.classList.toggle('on',t.dataset.tab==='console');previewEl.classList.toggle('on',t.dataset.tab==='preview')}));
+  function logLine(text,cls){const d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=text;consoleEl.appendChild(d);consoleEl.scrollTop=consoleEl.scrollHeight}
+  function run(){
+    const code=codeEl.value,lang=sel.value;consoleEl.innerHTML='';
+    if(lang==='html'){tabs.forEach(x=>x.classList.toggle('on',x.dataset.tab==='preview'));consoleEl.classList.remove('on');previewEl.classList.add('on');previewEl.srcdoc=code;return}
+    if(lang==='css'){tabs.forEach(x=>x.classList.toggle('on',x.dataset.tab==='preview'));consoleEl.classList.remove('on');previewEl.classList.add('on');previewEl.srcdoc=`<!DOCTYPE html><html><head><style>${code}</style></head><body><h1>Preview</h1><p>Demo page.</p></body></html>`;return}
+    tabs.forEach(x=>x.classList.toggle('on',x.dataset.tab==='console'));consoleEl.classList.add('on');previewEl.classList.remove('on');
+    if(lang!=='javascript'){logLine('This language needs a real compiler. Try JavaScript or HTML.','info');return}
+    const cap=[];const oL=console.log,oE=console.error;
+    console.log=(...a)=>cap.push(a.map(x=>typeof x==='object'&&x!==null?JSON.stringify(x):String(x)).join(' '));
+    console.error=(...a)=>cap.push({err:a.map(String).join(' ')});
+    try{new Function(code)()}catch(e){cap.push({err:'Error: '+e.message})}finally{console.log=oL;console.error=oE}
+    cap.forEach(l=>{if(typeof l==='object'&&l.err)logLine(l.err,'error');else logLine(String(l))});
+  }
+  document.getElementById('ed-run').onclick=run;
+  document.getElementById('ed-copy').onclick=()=>navigator.clipboard.writeText(codeEl.value);
+  document.getElementById('ed-reset').onclick=()=>{if(confirm('Reset?'))setCode(LANGS[sel.value].sample)};
+  loadLang('javascript');
+})();
+
+/* Games */
+(()=>{
+  const tabBtns=document.querySelectorAll('.games-tabs button');const panels=document.querySelectorAll('.game-panel');tabBtns.forEach(b=>b.addEventListener('click',()=>{tabBtns.forEach(x=>x.classList.toggle('on',x===b));panels.forEach(p=>p.classList.toggle('on',p.dataset.panel===b.dataset.game))}));
+
+  (()=>{const box=document.getElementById('rx-box'),msg=document.getElementById('rx-msg');if(!box)return;let state='ready',st=0,to=null,best=null;box.addEventListener('click',()=>{if(state==='ready'){state='waiting';box.textContent='Wait…';box.style.background='#7f1d1d';box.style.borderColor='#ef4444';box.style.color='#fecaca';const d=1000+Math.random()*3000;to=setTimeout(()=>{state='go';box.textContent='CLICK!';box.style.background='#166534';box.style.borderColor='#22c55e';box.style.color='#bbf7d0';st=performance.now()},d)}else if(state==='waiting'){clearTimeout(to);state='ready';box.textContent='Too early! Click to retry';box.style.cssText='background:var(--bg2);border-color:var(--c2)';msg.textContent='You clicked before green.'}else{const ms=Math.round(performance.now()-st);state='ready';box.textContent='Click to play again';box.style.cssText='background:var(--bg2);border-color:var(--c2)';if(!best||ms<best)best=ms;msg.innerHTML=`Time: <b>${ms} ms</b> · Best: <b>${best} ms</b>`}})})();
+
+  (()=>{const grid=document.getElementById('mem-grid'),status=document.getElementById('mem-status');if(!grid)return;const SYM=['★','♥','♦','♠','♣','●','▲','■'];let flipped=[],matched=0,moves=0,lock=false;function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}function init(){const cards=shuffle([...SYM,...SYM]);flipped=[];matched=0;moves=0;lock=false;grid.innerHTML='';cards.forEach((s,i)=>{const d=document.createElement('div');d.className='mem-card';d.dataset.sym=s;d.textContent='?';d.addEventListener('click',()=>flip(d));grid.appendChild(d)});status.innerHTML='Moves: <b>0</b> · Pairs: <b>0/8</b>'}function flip(card){if(lock||card.classList.contains('flipped')||card.classList.contains('matched'))return;card.classList.add('flipped');card.textContent=card.dataset.sym;flipped.push(card);if(flipped.length===2){moves++;const[a,b]=flipped;if(a.dataset.sym===b.dataset.sym){a.classList.add('matched');b.classList.add('matched');matched++;flipped=[];update();if(matched===8)setTimeout(()=>status.innerHTML=`<b>You win!</b> ${moves} moves.`,300)}else{lock=true;setTimeout(()=>{a.classList.remove('flipped');b.classList.remove('flipped');a.textContent='?';b.textContent='?';flipped=[];lock=false;update()},700)}}else update()}function update(){status.innerHTML=`Moves: <b>${moves}</b> · Pairs: <b>${matched}/8</b>`}init()})();
+
+  (()=>{const inp=document.getElementById('guess-in'),btn=document.getElementById('guess-btn'),msg=document.getElementById('guess-msg');if(!inp)return;let target=1+Math.floor(Math.random()*100);function guess(){const v=parseInt(inp.value);if(!v||v<1||v>100){msg.textContent='Pick 1-100.';return}inp.value='';if(v===target){msg.innerHTML=`Got it! The number was <b>${target}</b>.`;setTimeout(()=>{target=1+Math.floor(Math.random()*100);msg.textContent='New number picked.'},2600);return}const diff=Math.abs(v-target);msg.textContent=diff===1?(v<target?'Scorching! One higher.':'Scorching! One lower.'):diff<=3?(v<target?'Very close — higher.':'Very close — lower.'):diff<=10?(v<target?'Warm. Higher.':'Warm. Lower.'):diff<=30?(v<target?'Cool. Higher.':'Cool. Lower.'):(v<target?'Freezing. Much higher.':'Freezing. Much lower.')}btn.addEventListener('click',guess);inp.addEventListener('keydown',e=>{if(e.key==='Enter')guess()})})();
+
+  (()=>{const grid=document.getElementById('ttt-grid'),status=document.getElementById('ttt-status');if(!grid)return;const WINS=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];let board=Array(9).fill(''),gameOver=false;function winner(b){for(const[a,c,d]of WINS)if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return b.every(x=>x)?'draw':null}function render(){grid.innerHTML='';board.forEach((v,i)=>{const c=document.createElement('div');c.className='ttt-cell'+(v?' '+v.toLowerCase():'');c.textContent=v;c.addEventListener('click',()=>playerMove(i));grid.appendChild(c)})}function playerMove(i){if(gameOver||board[i])return;board[i]='X';render();const w=winner(board);if(w)return finish(w);status.textContent='AI thinking…';setTimeout(aiMove,300)}function aiMove(){let idx=-1;for(const[a,b,c]of WINS){const line=[board[a],board[b],board[c]];if(line.filter(x=>x==='O').length===2&&line.includes('')){idx=[a,b,c][line.indexOf('')];break}}if(idx===-1)for(const[a,b,c]of WINS){const line=[board[a],board[b],board[c]];if(line.filter(x=>x==='X').length===2&&line.includes('')){idx=[a,b,c][line.indexOf('')];break}}if(idx===-1&&!board[4])idx=4;if(idx===-1){const c=[0,2,6,8].filter(i=>!board[i]);if(c.length)idx=c[Math.floor(Math.random()*c.length)]}if(idx===-1){const e=board.map((v,i)=>v?-1:i).filter(i=>i!==-1);if(e.length)idx=e[Math.floor(Math.random()*e.length)]}if(idx===-1)return;board[idx]='O';render();const w=winner(board);if(w)return finish(w);status.textContent='Your move.'}function finish(w){gameOver=true;status.textContent=w==='X'?'You win!':w==='O'?'AI wins. Try again?':"It's a draw."}function reset(){board=Array(9).fill('');gameOver=false;status.textContent='Your move.';render()}document.getElementById('ttt-reset').onclick=reset;reset()})();
+
+  const KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let ki=0;
+  document.addEventListener('keydown',e=>{const key=e.key.length===1?e.key.toLowerCase():e.key;if(key===KONAMI[ki]){ki++;if(ki===KONAMI.length){ki=0;partyMode()}}else ki=(key===KONAMI[0])?1:0});
+  function partyMode(){if(document.getElementById('party-overlay'))return;const ov=document.createElement('div');ov.id='party-overlay';ov.style.cssText='position:fixed;inset:0;z-index:9999;pointer-events:none;background:radial-gradient(circle at 20% 20%,rgba(255,92,168,.35),transparent 40%),radial-gradient(circle at 80% 80%,rgba(34,211,238,.35),transparent 40%);animation:ph 3s linear infinite';const st=document.createElement('style');st.textContent='@keyframes ph{0%,100%{filter:hue-rotate(0)}50%{filter:hue-rotate(180deg)}}';document.head.appendChild(st);document.body.appendChild(ov);setTimeout(()=>{ov.style.transition='opacity .8s';ov.style.opacity='0';setTimeout(()=>ov.remove(),800)},5000)}
+
+  let tb='';document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key.length!==1)return;tb=(tb+e.key.toLowerCase()).slice(-24);if(tb.endsWith('lemon')){tb='';showToast('🍋 You found the lemon whisper.')}if(tb.endsWith('42')){tb='';showToast('42 — the answer.')}if(tb.endsWith('sudo')){tb='';showToast('sudo: permission denied.')}});
+  function showToast(text){const t=document.createElement('div');t.textContent=text;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#ff5ca8);color:#fff;font-weight:600;font-size:14px;z-index:10000;box-shadow:0 10px 30px -8px #7c5cff';document.body.appendChild(t);setTimeout(()=>{t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(()=>t.remove(),400)},2600)}
+})();
+</script>
+
+</body>
+</html>
